@@ -1,0 +1,16 @@
+use project_dma;
+SELECT * FROM Patient;
+SELECT * FROM Doctor;
+SELECT * FROM Hospital;
+SELECT * FROM Treats;
+SELECT * FROM Admits;
+SELECT * FROM Message;
+SELECT * FROM Support_Group;
+SELECT * FROM Enrolls;
+SELECT * FROM Billing;
+SELECT * FROM Appointment;
+SELECT * FROM Knowledge_Hub;
+SELECT * FROM Medicine_Info;
+SELECT * FROM Disease_Info;
+SELECT * FROM Medication_Tracker;
+SELECT * FROM Acessess;

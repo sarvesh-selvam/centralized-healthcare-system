@@ -1,0 +1,70 @@
+Queries:
+1) Simple query select patients
+
+db.PATIENT.find().sort({ Patient_ID: 1 })
+-----------------------------------------------------------------------------
+2) Aggregate query select total number of doctors in each specialization
+
+db.DOCTOR.aggregate([
+  {
+    $group: {
+      _id: "$Specialization",
+      NumberOfDoctors: { $sum: 1 }
+    }
+  }
+])
+
+-----------------------------------------------------------------------------
+3) Doctor with the most number of patients
+
+db.DOCTOR.aggregate([
+  {
+    $lookup: {
+      from: "TREATS",
+      localField: "Doctor_ID",
+      foreignField: "Doctor_ID",
+      as: "treats"
+    }
+  },
+  {
+    $unwind: "$treats"
+  },
+  {
+    $group: {
+      _id: "$Doctor_ID",
+      Doctor_Name: { $first: "$Name" },
+      Specialization: { $first: "$Specialization" },
+      Patient_Count: { $sum: 1 }
+    }
+  },
+  {
+    $match: {
+      Patient_Count: {
+        $gte: db.TREATS.aggregate([
+          {
+            $group: {
+              _id: "$Doctor_ID",
+              PatientCount: { $sum: 1 }
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              MaxPatientCount: { $max: "$PatientCount" }
+            }
+          }
+        ]).next().MaxPatientCount
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      Doctor_ID: "$_id",
+      Doctor_Name: 1,
+      Specialization: 1,
+      Patient_Count: 1
+    }
+  }
+])
+-----------------------------------------------------------------------------
